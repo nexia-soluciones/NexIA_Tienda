@@ -1,4 +1,5 @@
 import { getDevContext } from "@/lib/supabase/devClient";
+import { embedOne } from "@/lib/pgrest";
 import PosCalculator from "./PosCalculator";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export default async function CalculadoraPage() {
     .order("name");
 
   const disponibles = products?.filter(
-    (p) => (p.inventory?.[0]?.stock ?? 0) > 0
+    (p) => (embedOne(p.inventory)?.stock ?? 0) > 0
   ) ?? [];
 
   return (

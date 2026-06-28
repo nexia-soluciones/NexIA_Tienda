@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { embedOne } from "@/lib/pgrest";
 
 interface Product {
   id: string;
@@ -26,7 +27,7 @@ export default function ProductForm({ product }: { product: Product }) {
     product.metadata ? JSON.stringify(product.metadata, null, 2) : ""
   );
 
-  const inv = product.inventory?.[0];
+  const inv = embedOne(product.inventory);
   const isLowStock = inv && inv.stock < inv.low_stock_threshold;
 
   async function handleSave() {

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { embedOne } from "@/lib/pgrest";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -38,8 +39,8 @@ export default function ProductEditor({
     price: product?.price?.toString() ?? "",
     category: product?.category ?? "",
     search_tags: product?.search_tags?.join(", ") ?? "",
-    stock: product?.inventory?.[0]?.stock?.toString() ?? "0",
-    low_stock_threshold: product?.inventory?.[0]?.low_stock_threshold?.toString() ?? "5",
+    stock: embedOne(product?.inventory)?.stock?.toString() ?? "0",
+    low_stock_threshold: embedOne(product?.inventory)?.low_stock_threshold?.toString() ?? "5",
     image_url: product?.image_url ?? "",
   });
 

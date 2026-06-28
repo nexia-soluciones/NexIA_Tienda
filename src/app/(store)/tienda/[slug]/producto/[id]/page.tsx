@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { embedOne } from "@/lib/pgrest";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,7 +28,7 @@ export default async function ProductoPage({
 
   if (!product) notFound();
 
-  const stock = product.inventory?.[0]?.stock ?? 0;
+  const stock = embedOne(product.inventory)?.stock ?? 0;
   const sinStock = stock === 0;
 
   return (

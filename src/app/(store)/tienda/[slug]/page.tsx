@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { embedOne } from "@/lib/pgrest";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -33,7 +34,7 @@ export default async function TiendaSlugPage({
     .order("name");
 
   const available = products?.filter(
-    (p) => (p.inventory?.[0]?.stock ?? 0) > 0
+    (p) => (embedOne(p.inventory)?.stock ?? 0) > 0
   ) ?? [];
 
   const categories = [...new Set(available.map((p) => p.category).filter(Boolean))];
