@@ -36,7 +36,7 @@ export default async function DuenoLayout({
       .eq("user_id", user.id)
       .limit(1)
       .single();
-    storeSlug = (ut?.tenants as { slug: string } | null)?.slug ?? null;
+    storeSlug = (ut?.tenants as unknown as { slug: string } | null)?.slug ?? null;
   }
 
   return (

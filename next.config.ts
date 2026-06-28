@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone", // build mínimo para Docker/EasyPanel (.next/standalone)
   images: {
     remotePatterns: [
       {

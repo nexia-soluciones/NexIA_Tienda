@@ -88,7 +88,7 @@ export default async function ProductoPage({
           {/* Tags */}
           {product.search_tags && product.search_tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {product.search_tags.map((tag) => (
+              {product.search_tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full"

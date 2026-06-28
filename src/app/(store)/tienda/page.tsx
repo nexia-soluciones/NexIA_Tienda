@@ -31,7 +31,7 @@ export default async function TiendaRootPage() {
       .limit(1)
       .single();
 
-    const slug = (ut?.tenants as { slug: string } | null)?.slug;
+    const slug = (ut?.tenants as unknown as { slug: string } | null)?.slug;
     if (slug) redirect(`/tienda/${slug}`);
   }
 
