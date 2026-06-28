@@ -97,6 +97,8 @@ async function crearOrdenYSheet(
       payment_status: paymentStatus,
       total: cot.total,
       customer_name: cliente.nombre.trim(),
+      customer_phone: cliente.telefono.trim(),
+      customer_address: cliente.direccion.trim(),
       notes,
       metadata,
     })
