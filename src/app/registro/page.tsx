@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { registrarTienda } from "./actions";
 
 function slugify(text: string): string {
   return text
@@ -121,21 +122,15 @@ export default function RegistroPage() {
       return;
     }
 
-    // Paso 2: Crear tenant + asignar rol (usando el userId recién creado)
-    const res = await fetch("/api/registro", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        storeName: form.storeName,
-        slug: form.slug,
-        userId,
-      }),
+    // Paso 2: Crear tenant + asignar rol — Server Action (evita el 405 de Traefik en POST /api/)
+    const data = await registrarTienda({
+      storeName: form.storeName,
+      slug: form.slug,
+      userId,
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      // Si falla el tenant, intentar borrar el usuario creado
+    if (!data.ok) {
+      // Si falla el tenant, cerrar la sesión recién creada
       await supabase.auth.signOut();
       setError(data.error ?? "Error al crear la tienda. Intenta de nuevo.");
       setSubmitting(false);

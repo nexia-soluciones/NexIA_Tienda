@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (!["cliente", "vendedor"].includes(role)) {
+  if (!["cliente", "vendedor", "empleado"].includes(role)) {
     return NextResponse.json(
-      { error: "Rol inválido. Solo se permite: cliente, vendedor." },
+      { error: "Rol inválido. Solo se permite: cliente, vendedor, empleado." },
       { status: 400 }
     );
   }

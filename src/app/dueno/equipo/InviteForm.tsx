@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function InviteForm() {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"vendedor" | "cliente">("vendedor");
+  const [role, setRole] = useState<"vendedor" | "empleado" | "cliente">("vendedor");
   const [loading, setLoading] = useState(false);
   const [inviteLink, setInviteLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -56,10 +56,11 @@ export default function InviteForm() {
         />
         <select
           value={role}
-          onChange={(e) => setRole(e.target.value as "vendedor" | "cliente")}
+          onChange={(e) => setRole(e.target.value as "vendedor" | "empleado" | "cliente")}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="vendedor">Vendedor</option>
+          <option value="vendedor">Vendedor (mostrador)</option>
+          <option value="empleado">Empleado (preparación de pedidos)</option>
           <option value="cliente">Cliente</option>
         </select>
         <button

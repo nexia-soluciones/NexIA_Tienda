@@ -8,15 +8,23 @@ export const dynamic = "force-dynamic";
 export default async function DuenoProductosPage() {
   const { supabase, tenantId } = await getDevContext();
 
-  const { data: products } = await supabase
-    .schema("nexia_tienda")
-    .from("products")
-    .select(
-      `id, sku, name, price, image_url, category, description, benefits_description,
-       search_tags, inventory ( stock, low_stock_threshold )`
-    )
-    .eq("tenant_id", tenantId)
-    .order("name");
+  const [{ data: products }, { data: inventoryList }] = await Promise.all([
+    supabase
+      .schema("nexia_tienda")
+      .from("products")
+      .select("id, sku, name, price, image_url, category, description, benefits_description, search_tags")
+      .eq("tenant_id", tenantId)
+      .order("name"),
+    supabase
+      .schema("nexia_tienda")
+      .from("inventory")
+      .select("product_id, stock, low_stock_threshold")
+      .eq("tenant_id", tenantId),
+  ]);
+
+  const inventoryMap = new Map(
+    (inventoryList ?? []).map((i) => [i.product_id, i])
+  );
 
   return (
     <div className="space-y-5">
@@ -60,8 +68,9 @@ export default async function DuenoProductosPage() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {products.map((product) => {
-                const stock = product.inventory?.[0]?.stock ?? 0;
-                const umbral = product.inventory?.[0]?.low_stock_threshold ?? 5;
+                const inv = inventoryMap.get(product.id);
+                const stock = inv?.stock ?? 0;
+                const umbral = inv?.low_stock_threshold ?? 5;
                 const stockAlert = stock <= umbral;
                 return (
                   <tr key={product.id} className="hover:bg-gray-50">

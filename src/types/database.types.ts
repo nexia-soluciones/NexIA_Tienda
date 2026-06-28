@@ -13,7 +13,7 @@ export type OrderStatus =
   | "entregado"
   | "cancelado";
 
-export type UserRole = "cliente" | "vendedor" | "dueno" | "administrador";
+export type UserRole = "cliente" | "vendedor" | "empleado" | "dueno" | "administrador";
 
 export interface Database {
   nexia_tienda: {

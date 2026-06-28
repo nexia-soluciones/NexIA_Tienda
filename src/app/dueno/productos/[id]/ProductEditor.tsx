@@ -143,29 +143,19 @@ export default function ProductEditor({
         return;
       }
 
-      // Actualizar inventario
-      const inventoryId = product?.inventory?.[0]?.id;
-      if (inventoryId) {
-        await supabase
-          .schema("nexia_tienda")
-          .from("inventory")
-          .update({
-            stock: parseInt(form.stock),
-            low_stock_threshold: parseInt(form.low_stock_threshold),
-          })
-          .eq("id", inventoryId);
-      } else {
-        // No existe registro de inventario para este producto, crearlo
-        await supabase
-          .schema("nexia_tienda")
-          .from("inventory")
-          .insert({
+      // Upsert inventario: inserta si no existe, actualiza si ya existe
+      await supabase
+        .schema("nexia_tienda")
+        .from("inventory")
+        .upsert(
+          {
             product_id: product!.id,
             tenant_id: tenantId,
             stock: parseInt(form.stock),
             low_stock_threshold: parseInt(form.low_stock_threshold),
-          });
-      }
+          },
+          { onConflict: "product_id" }
+        );
     }
 
     router.push("/dueno/productos");

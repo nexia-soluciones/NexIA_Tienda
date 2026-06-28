@@ -4,6 +4,7 @@ import type { UserRole } from "@/types/database.types";
 
 const PROTECTED_PREFIXES: { prefix: string; roles: UserRole[] }[] = [
   { prefix: "/vendedor", roles: ["vendedor", "dueno", "administrador"] },
+  { prefix: "/empleado", roles: ["empleado", "dueno", "administrador"] },
   { prefix: "/dueno", roles: ["dueno", "administrador"] },
   { prefix: "/admin", roles: ["administrador"] },
 ];
@@ -35,14 +36,8 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/auth") || pathname === "/";
 
-  // En desarrollo se omite la verificación de sesión
+  // En desarrollo no validamos sesión: dejamos pasar todo y se navega a mano.
   if (process.env.NODE_ENV === "development") {
-    if (isAuthRoute) {
-      const url = request.nextUrl.clone();
-      const devRole = (process.env.DEV_ROLE ?? "dueno") as UserRole;
-      url.pathname = roleHomePath(devRole);
-      return NextResponse.redirect(url);
-    }
     return supabaseResponse;
   }
 
@@ -63,54 +58,61 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Obtener todos los roles del usuario (puede tener varios tenants)
+    // Obtener todos los roles del usuario (puede tener varios tenants) + slug
     const { data: uts } = await supabase
       .schema("nexia_tienda")
       .from("user_tenants")
-      .select("role")
+      .select("role, tenants(slug)")
       .eq("user_id", user.id);
 
     const roles = (uts ?? []).map((r) => r.role as UserRole);
     const topRole = topPriorityRole(roles);
+    const firstSlug = (uts ?? [])
+      .map((r) => (r.tenants as { slug?: string } | null)?.slug)
+      .find((s): s is string => !!s);
 
     if (!roles.some((r) => protectedMatch.roles.includes(r))) {
       // No tiene ningún rol que permita esta ruta
       const url = request.nextUrl.clone();
-      url.pathname = roleHomePath(topRole);
+      url.pathname = roleHomePath(topRole, firstSlug);
       return NextResponse.redirect(url);
     }
   }
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
-    // Obtener todos los roles para redirigir al panel correcto
+    // Obtener todos los roles + slug para redirigir al panel correcto
     const { data: uts } = await supabase
       .schema("nexia_tienda")
       .from("user_tenants")
-      .select("role")
+      .select("role, tenants(slug)")
       .eq("user_id", user.id);
 
     const roles = (uts ?? []).map((r) => r.role as UserRole);
-    url.pathname = roleHomePath(topPriorityRole(roles));
+    const firstSlug = (uts ?? [])
+      .map((r) => (r.tenants as { slug?: string } | null)?.slug)
+      .find((s): s is string => !!s);
+    url.pathname = roleHomePath(topPriorityRole(roles), firstSlug);
     return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
 }
 
-function roleHomePath(role: UserRole | undefined): string {
+function roleHomePath(role: UserRole | undefined, tenantSlug?: string): string {
   switch (role) {
     case "administrador": return "/admin";
     case "dueno": return "/dueno/analytics";
     case "vendedor": return "/vendedor";
-    case "cliente": return "/tienda";
+    case "empleado": return "/empleado";
+    case "cliente": return tenantSlug ? `/tienda/${tenantSlug}` : "/";
     default: return "/auth/login";
   }
 }
 
 // Devuelve el rol de mayor prioridad de una lista.
 // Un usuario puede tener varios roles en distintos tenants.
-const ROLE_PRIORITY: UserRole[] = ["administrador", "dueno", "vendedor", "cliente"];
+const ROLE_PRIORITY: UserRole[] = ["administrador", "dueno", "vendedor", "empleado", "cliente"];
 
 function topPriorityRole(roles: UserRole[]): UserRole | undefined {
   for (const r of ROLE_PRIORITY) {

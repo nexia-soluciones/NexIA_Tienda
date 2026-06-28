@@ -1,11 +1,11 @@
 import { getDevContext } from "@/lib/supabase/devClient";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending:    { label: "Pendiente",  color: "bg-amber-100 text-amber-700"   },
-  processing: { label: "Procesando", color: "bg-blue-100 text-blue-700"     },
-  shipped:    { label: "Enviado",    color: "bg-purple-100 text-purple-700" },
-  delivered:  { label: "Entregado",  color: "bg-green-100 text-green-700"   },
-  cancelled:  { label: "Cancelado",  color: "bg-red-100 text-red-700"       },
+  recibido:        { label: "Recibido",          color: "bg-amber-100 text-amber-700"   },
+  en_preparacion:  { label: "En proceso",        color: "bg-blue-100 text-blue-700"     },
+  listo_entrega:   { label: "Listo para entrega", color: "bg-purple-100 text-purple-700" },
+  entregado:       { label: "Entregado",         color: "bg-green-100 text-green-700"   },
+  cancelado:       { label: "Cancelado",         color: "bg-red-100 text-red-700"       },
 };
 
 export default async function PedidosPage() {
@@ -59,7 +59,7 @@ export default async function PedidosPage() {
               </tr>
             )}
             {orders?.map((order) => {
-              const statusInfo = STATUS_LABELS[order.status] ?? STATUS_LABELS["pending"];
+              const statusInfo = STATUS_LABELS[order.status] ?? STATUS_LABELS["recibido"];
               return (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-5 py-3 font-mono text-gray-400 text-xs">

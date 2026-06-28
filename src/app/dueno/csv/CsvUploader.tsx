@@ -50,7 +50,7 @@ function parseCsv(text: string): CsvRow[] {
     headers.forEach((h, idx) => {
       row[h] = values[idx] ?? "";
     });
-    rows.push(row as CsvRow);
+    rows.push(row as unknown as CsvRow);
   }
   return rows;
 }
@@ -68,7 +68,16 @@ export default function CsvUploader({ tenantId }: { tenantId: string }) {
     setFilename(file.name);
     setResult(null);
 
-    const text = await file.text();
+    // Excel en Windows suele exportar CSV en Windows-1252, no UTF-8.
+    // file.text() asume UTF-8 y convierte los acentos en U+FFFD (mojibake).
+    // Leemos los bytes y, si no son UTF-8 válido, decodificamos como Windows-1252.
+    const buffer = await file.arrayBuffer();
+    let text: string;
+    try {
+      text = new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+    } catch {
+      text = new TextDecoder("windows-1252").decode(buffer);
+    }
     const rows = parseCsv(text);
     setPreview(rows);
   }
@@ -133,35 +142,20 @@ export default function CsvUploader({ tenantId }: { tenantId: string }) {
           continue;
         }
 
-        // Actualizar inventario si se especificó stock
+        // Upsert inventario si se especificó stock
         if (row.stock !== undefined) {
-          const { data: existingInv } = await supabase
+          await supabase
             .schema("nexia_tienda")
             .from("inventory")
-            .select("id")
-            .eq("product_id", existing.id)
-            .single();
-
-          if (existingInv) {
-            await supabase
-              .schema("nexia_tienda")
-              .from("inventory")
-              .update({
-                stock: parseInt(row.stock ?? "0"),
-                low_stock_threshold: parseInt(row.low_stock_threshold ?? "5"),
-              })
-              .eq("product_id", existing.id);
-          } else {
-            await supabase
-              .schema("nexia_tienda")
-              .from("inventory")
-              .insert({
+            .upsert(
+              {
                 product_id: existing.id,
                 tenant_id: tenantId,
                 stock: parseInt(row.stock ?? "0"),
                 low_stock_threshold: parseInt(row.low_stock_threshold ?? "5"),
-              });
-          }
+              },
+              { onConflict: "product_id" }
+            );
         }
         res.updated++;
       } else {
