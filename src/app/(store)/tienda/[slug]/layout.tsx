@@ -122,7 +122,7 @@ export default async function TenantStoreLayout({
               Buscar por malestar
             </Link>
             <Link
-              href={`/tienda/${slug}/carrito`}
+              href="/tienda/carrito"
               className="text-sm text-white px-4 py-1.5 rounded-full font-medium transition-opacity hover:opacity-90"
               style={{ backgroundColor: primary }}
             >
