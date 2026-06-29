@@ -29,20 +29,24 @@ export default function Catalogo({
 
   const visibles = activa ? products.filter((p) => p.category === activa) : products;
 
+  const chip = (sel: boolean) =>
+    `text-xs px-3.5 py-2 rounded-full border font-medium transition-all ${
+      sel
+        ? "text-white border-transparent shadow-sm scale-105"
+        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+    }`;
+
   return (
     <div>
-      {/* Filtro por categoría (clickable) */}
+      {/* Filtro por categoría */}
       {categorias.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
           <button
             onClick={() => setActiva(null)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-              activa === null
-                ? "bg-[var(--brand-primary,#16a34a)] text-white border-transparent"
-                : "bg-gray-100 text-gray-600 border-transparent hover:bg-gray-200"
-            }`}
+            className={chip(activa === null)}
+            style={activa === null ? { backgroundColor: "var(--brand-primary,#16a34a)" } : undefined}
           >
-            Todos ({products.length})
+            ✦ Todos ({products.length})
           </button>
           {categorias.map((cat) => {
             const n = products.filter((p) => p.category === cat).length;
@@ -51,11 +55,8 @@ export default function Catalogo({
               <button
                 key={cat}
                 onClick={() => setActiva(sel ? null : cat)}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  sel
-                    ? "bg-[var(--brand-primary,#16a34a)] text-white border-transparent"
-                    : "bg-gray-100 text-gray-600 border-transparent hover:bg-gray-200"
-                }`}
+                className={chip(sel)}
+                style={sel ? { backgroundColor: "var(--brand-primary,#16a34a)" } : undefined}
               >
                 {cat} ({n})
               </button>
@@ -70,20 +71,20 @@ export default function Catalogo({
           <p>No hay productos en esta categoría.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {visibles.map((product) => (
             <Link
               key={product.id}
               href={`/tienda/${slug}/producto/${product.id}`}
-              className="group border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-400 hover:shadow-md transition-all"
+              className="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="aspect-square bg-gray-100 relative">
+              <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 relative">
                 {product.image_url ? (
                   <Image
                     src={product.image_url}
                     alt={product.name}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-5xl text-gray-300">
@@ -91,23 +92,37 @@ export default function Catalogo({
                   </div>
                 )}
                 {product.category && (
-                  <span className="absolute top-2 left-2 text-xs bg-white/90 text-gray-600 px-2 py-0.5 rounded-full border border-gray-200">
+                  <span
+                    className="absolute top-2.5 left-2.5 text-[10px] font-medium text-white px-2.5 py-1 rounded-full backdrop-blur-sm"
+                    style={{ backgroundColor: "color-mix(in srgb, var(--brand-primary,#16a34a) 88%, transparent)" }}
+                  >
                     {product.category}
                   </span>
                 )}
               </div>
               <div className="p-4">
-                <h2 className="font-semibold text-gray-900 group-hover:text-[var(--brand-primary,#2563eb)] transition-colors">
+                <h2 className="font-semibold text-gray-900 leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-[var(--brand-primary,#16a34a)] transition-colors">
                   {product.name}
                 </h2>
                 {product.benefits_description ? (
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.benefits_description}</p>
+                  <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{product.benefits_description}</p>
                 ) : product.description ? (
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.description}</p>
+                  <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{product.description}</p>
                 ) : null}
-                <p className="text-xl font-bold text-gray-900 mt-3">
-                  ${Number(product.price).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
-                </p>
+                <div className="flex items-center justify-between mt-3">
+                  <p
+                    className="text-xl font-extrabold"
+                    style={{ color: "var(--brand-primary,#16a34a)" }}
+                  >
+                    ${Number(product.price).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+                  </p>
+                  <span
+                    className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: "var(--brand-accent,#0ea5e9)" }}
+                  >
+                    Ver →
+                  </span>
+                </div>
               </div>
             </Link>
           ))}

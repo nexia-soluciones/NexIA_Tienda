@@ -76,9 +76,9 @@ export default async function TenantStoreLayout({
         } as React.CSSProperties
       }
     >
-      <header className="sticky top-0 bg-white z-10 border-b border-gray-200">
-        {/* Franja de acento con el color primario de la marca */}
-        <div className="h-1.5" style={{ backgroundColor: primary }} />
+      <header className="sticky top-0 bg-white/90 backdrop-blur-md z-20 border-b border-gray-100">
+        {/* Franja de acento con la paleta de la marca */}
+        <div className="h-1" style={{ background: `linear-gradient(90deg, ${primary}, ${accent})` }} />
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <Link
             href={`/tienda/${slug}`}
@@ -104,7 +104,7 @@ export default async function TenantStoreLayout({
               )}
             </span>
             <span className="min-w-0">
-              <span className="block text-lg font-bold text-gray-900 leading-tight truncate">
+              <span className="block text-lg font-bold leading-tight truncate" style={{ color: primary }}>
                 {tenant.name}
               </span>
               {tenant.tagline && (
