@@ -53,6 +53,7 @@ export default async function DuenoLayout({
         </div>
         <nav className="flex-1 p-3 space-y-1">
           <NavLink href="/dueno/analytics" icon="📊">Analytics</NavLink>
+          <NavLink href="/empleado" icon="📋">Pedidos</NavLink>
           <NavLink href="/dueno/productos" icon="📦">Productos</NavLink>
           <NavLink href="/dueno/cobros" icon="💳">Cobros</NavLink>
           <NavLink href="/dueno/csv" icon="📁">Carga CSV</NavLink>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getDevContext } from "@/lib/supabase/devClient";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -19,16 +20,46 @@ export default async function VendedorLayout({
     userEmail = user.email ?? null;
   }
 
+  // Marca de la tienda (logo + color) para el POS de mostrador
+  const { supabase: db, tenantId } = await getDevContext();
+  const { data: tenant } = await db
+    .schema("nexia_tienda")
+    .from("tenants")
+    .select("name, logo_url, color_primary")
+    .eq("id", tenantId)
+    .single();
+  const primary = tenant?.color_primary ?? "#16a34a";
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div
+      className="min-h-screen bg-gray-50 flex"
+      style={{ ["--brand-primary" as string]: primary } as React.CSSProperties}
+    >
       <aside className="w-60 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-5 border-b border-gray-200">
-          <h1 className="font-bold text-gray-900">Panel Vendedor</h1>
-          {userEmail ? (
-            <p className="text-xs text-gray-400 mt-0.5 truncate">{userEmail}</p>
+        <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+          {tenant?.logo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={tenant.logo_url}
+              alt={tenant.name ?? "Logo"}
+              className="w-11 h-11 rounded-lg object-contain bg-white flex-shrink-0"
+            />
           ) : (
-            <p className="text-xs text-gray-400 mt-0.5">Modo desarrollo</p>
+            <div
+              className="w-11 h-11 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0"
+              style={{ backgroundColor: primary }}
+            >
+              {(tenant?.name ?? "T").charAt(0)}
+            </div>
           )}
+          <div className="min-w-0">
+            <h1 className="font-bold text-gray-900 text-sm truncate">
+              {tenant?.name ?? "Panel Vendedor"}
+            </h1>
+            <p className="text-xs text-gray-400 truncate">
+              {userEmail ?? "Punto de venta"}
+            </p>
+          </div>
         </div>
         <nav className="flex-1 p-3 space-y-1">
           <NavLink href="/vendedor" icon="🛒">Pedidos</NavLink>
