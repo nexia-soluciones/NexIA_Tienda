@@ -23,6 +23,10 @@ export interface Database {
           id: string;
           name: string;
           slug: string;
+          logo_url: string | null;
+          color_primary: string | null;
+          color_accent: string | null;
+          tagline: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -30,6 +34,10 @@ export interface Database {
           id?: string;
           name: string;
           slug: string;
+          logo_url?: string | null;
+          color_primary?: string | null;
+          color_accent?: string | null;
+          tagline?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -37,6 +45,10 @@ export interface Database {
           id?: string;
           name?: string;
           slug?: string;
+          logo_url?: string | null;
+          color_primary?: string | null;
+          color_accent?: string | null;
+          tagline?: string | null;
           updated_at?: string;
         };
       };

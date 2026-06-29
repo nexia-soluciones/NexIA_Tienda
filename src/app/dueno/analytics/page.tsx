@@ -39,6 +39,21 @@ export default async function AnalyticsPage() {
     .eq("tenant_id", tenantId)
     .order("sugerencia");
 
+  // Ventas por categoría
+  const { data: byCategory } = await supabase
+    .schema("nexia_tienda")
+    .from("v_sales_by_category")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .order("revenue", { ascending: false });
+
+  // Ventas por canal
+  const { data: byChannel } = await supabase
+    .schema("nexia_tienda")
+    .from("v_sales_by_channel")
+    .select("*")
+    .eq("tenant_id", tenantId);
+
   // Pedidos recientes con desglose
   const { data: recentOrders } = await supabase
     .schema("nexia_tienda")
@@ -66,6 +81,8 @@ export default async function AnalyticsPage() {
         topProducts={topProducts ?? []}
         inventorySuggestions={inventorySuggestions ?? []}
         recentOrders={recentOrders as never ?? []}
+        byCategory={byCategory ?? []}
+        byChannel={byChannel ?? []}
       />
     </div>
   );

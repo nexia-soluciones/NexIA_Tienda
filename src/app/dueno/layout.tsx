@@ -57,6 +57,7 @@ export default async function DuenoLayout({
           <NavLink href="/dueno/cobros" icon="💳">Cobros</NavLink>
           <NavLink href="/dueno/csv" icon="📁">Carga CSV</NavLink>
           <NavLink href="/dueno/equipo" icon="👥">Equipo</NavLink>
+          <NavLink href="/dueno/configuracion" icon="🎨">Marca</NavLink>
           {storeSlug && (
             <Link
               href={`/tienda/${storeSlug}`}
