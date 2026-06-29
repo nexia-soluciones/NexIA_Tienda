@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart/useCart";
 import Link from "next/link";
+import QRCode from "react-qr-code";
 import { crearPedidoWeb, crearCheckoutStripe, tiendaAceptaTarjeta } from "./actions";
 
 export default function CarritoPage() {
@@ -57,7 +58,7 @@ export default function CarritoPage() {
 
   async function handlePagarTarjeta() {
     if (!nombre.trim() || !telefono.trim() || !direccion.trim()) {
-      setError("Completa nombre, WhatsApp y dirección antes de pagar.");
+      setError("Completa nombre, teléfono y dirección antes de pagar.");
       return;
     }
     setError(null);
@@ -88,15 +89,37 @@ export default function CarritoPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Carrito</h1>
 
         {folio ? (
-          <div className="text-center py-20">
+          <div className="text-center py-12">
             <p className="text-5xl mb-4">✅</p>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">¡Pedido recibido!</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">¡Gracias por tu compra! 🌿</h2>
             <p className="text-gray-600 mb-1">
-              Folio <span className="font-mono font-semibold">#{folio.slice(0, 8)}</span>
+              Pedido <span className="font-mono font-semibold">#{folio.slice(0, 8)}</span> recibido
             </p>
-            <p className="text-gray-500 text-sm mb-8 max-w-sm mx-auto">
-              En breve te contactaremos por WhatsApp para confirmar la entrega. ¡Gracias por tu compra! 🌿
+            <p className="text-gray-500 text-sm mb-6 max-w-sm mx-auto">
+              Te contactaremos para coordinar la entrega o el envío.
             </p>
+
+            {/* Seguimiento por Telegram con QR */}
+            <div className="max-w-xs mx-auto bg-white border border-gray-200 rounded-2xl p-5 mb-6">
+              <p className="text-sm font-semibold text-gray-800 mb-1">📲 Dale seguimiento por Telegram</p>
+              <p className="text-xs text-gray-500 mb-4">
+                Escanea el código o toca el botón. Te avisaremos por ahí cuando tu pedido esté listo.
+              </p>
+              <div className="flex justify-center mb-4">
+                <div className="bg-white p-2 rounded-lg border border-gray-100">
+                  <QRCode value={`https://t.me/Baambule_bot?start=ped_${folio.slice(0, 8)}`} size={140} />
+                </div>
+              </div>
+              <a
+                href={`https://t.me/Baambule_bot?start=ped_${folio.slice(0, 8)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block w-full py-2.5 rounded-xl font-medium text-sm text-white"
+                style={{ backgroundColor: "#229ED9" }}
+              >
+                Abrir en Telegram
+              </a>
+            </div>
             <Link href="/tienda" className="text-blue-600 hover:underline text-sm font-medium">
               Seguir comprando
             </Link>
@@ -200,7 +223,7 @@ export default function CarritoPage() {
                     required
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
-                    placeholder="WhatsApp (10 dígitos)"
+                    placeholder="Teléfono (10 dígitos)"
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <textarea
@@ -243,7 +266,7 @@ export default function CarritoPage() {
                     {loading === "pedido"
                       ? "Procesando…"
                       : aceptaTarjeta
-                      ? "Pedir y pagar por WhatsApp"
+                      ? "Pedir y coordinar por Telegram"
                       : `Confirmar pedido · $${total.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`}
                   </button>
 
@@ -257,8 +280,8 @@ export default function CarritoPage() {
                   </button>
                   <p className="text-xs text-gray-400 text-center">
                     {aceptaTarjeta
-                      ? "Paga seguro con Stripe, o pide ahora y coordinamos el cobro por WhatsApp."
-                      : "Te contactamos por WhatsApp para el cobro y la entrega."}
+                      ? "Paga seguro con Stripe, o pide ahora y coordinamos el cobro por Telegram."
+                      : "Te contactamos por Telegram para el cobro y la entrega."}
                   </p>
                 </form>
               )}

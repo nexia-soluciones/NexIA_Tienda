@@ -41,8 +41,8 @@ function validarCliente(c: Cliente): string | null {
   const nombre = (c?.nombre || "").trim();
   const telefono = (c?.telefono || "").trim();
   const direccion = (c?.direccion || "").trim();
-  if (!nombre || !telefono || !direccion) return "Faltan datos: nombre, WhatsApp y dirección.";
-  if (telefono.replace(/\D/g, "").length < 10) return "El WhatsApp debe tener al menos 10 dígitos.";
+  if (!nombre || !telefono || !direccion) return "Faltan datos: nombre, teléfono y dirección.";
+  if (telefono.replace(/\D/g, "").length < 10) return "El teléfono debe tener al menos 10 dígitos.";
   return null;
 }
 
