@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { invitarUsuario } from "./actions";
 
 export default function InviteForm() {
   const [email, setEmail] = useState("");
@@ -17,19 +18,17 @@ export default function InviteForm() {
     setCopied(false);
     setError(null);
 
-    const res = await fetch("/api/invitar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, role }),
-    });
+    try {
+      const data = await invitarUsuario({ email, role });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error ?? "Error al generar la invitación.");
-    } else {
-      setInviteLink(data.link ?? null);
-      setEmail("");
+      if (!data.ok) {
+        setError(data.error ?? "Error al generar la invitación.");
+      } else {
+        setInviteLink(data.link ?? null);
+        setEmail("");
+      }
+    } catch {
+      setError("Error al generar la invitación.");
     }
 
     setLoading(false);

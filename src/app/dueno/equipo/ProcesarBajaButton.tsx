@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { procesarBaja } from "./actions";
 
 interface Props {
   requestId: string;
@@ -17,19 +18,18 @@ export default function ProcesarBajaButton({ requestId, targetEmail }: Props) {
     setLoading(action);
     setError(null);
 
-    const res = await fetch("/api/procesar-baja", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ requestId, action }),
-    });
+    try {
+      const data = await procesarBaja({ requestId, action });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error ?? "Error al procesar la solicitud.");
+      if (!data.ok) {
+        setError(data.error ?? "Error al procesar la solicitud.");
+        setLoading(null);
+      } else {
+        router.refresh();
+      }
+    } catch {
+      setError("Error al procesar la solicitud.");
       setLoading(null);
-    } else {
-      router.refresh();
     }
   }
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { generateImage } from "./actions";
 
 interface Product {
   id: string;
@@ -52,15 +53,9 @@ export default function ImagenGeneratorPanel({
     setGeneratedUrl(null);
 
     try {
-      const res = await fetch("/api/admin/generate-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, productId: selected.id }),
-      });
+      const data = await generateImage({ prompt, productId: selected.id });
 
-      const data = await res.json();
-
-      if (!res.ok) {
+      if (!data.ok || !data.imageUrl) {
         throw new Error(data.error ?? "Error al generar imagen");
       }
 

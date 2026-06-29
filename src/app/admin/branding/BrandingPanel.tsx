@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { generateBranding } from "./actions";
 
 interface Tenant {
   id: string;
@@ -33,19 +34,13 @@ export default function BrandingPanel({ tenants }: { tenants: Tenant[] }) {
     setBrandKit(null);
 
     try {
-      const res = await fetch("/api/admin/generate-branding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tenantName: selectedTenant.name,
-          giro,
-          publico,
-        }),
+      const data = await generateBranding({
+        tenantName: selectedTenant.name,
+        giro,
+        publico,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error ?? "Error al generar branding");
+      if (!data.ok || !data.brandKit) throw new Error(data.error ?? "Error al generar branding");
 
       setBrandKit(data.brandKit);
     } catch (e) {

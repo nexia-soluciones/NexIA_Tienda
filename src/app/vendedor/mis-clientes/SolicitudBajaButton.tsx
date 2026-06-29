@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { solicitarBaja } from "./actions";
 
 interface Props {
   invitationId: string;
@@ -19,19 +20,17 @@ export default function SolicitudBajaButton({ invitationId, targetEmail }: Props
     setLoading(true);
     setError(null);
 
-    const res = await fetch("/api/solicitar-baja", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ invitationId, reason }),
-    });
+    try {
+      const data = await solicitarBaja({ invitationId, reason });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error ?? "Error al enviar la solicitud.");
-    } else {
-      setDone(true);
-      setOpen(false);
+      if (!data.ok) {
+        setError(data.error ?? "Error al enviar la solicitud.");
+      } else {
+        setDone(true);
+        setOpen(false);
+      }
+    } catch {
+      setError("Error al enviar la solicitud.");
     }
 
     setLoading(false);
