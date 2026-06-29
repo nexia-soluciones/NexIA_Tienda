@@ -62,6 +62,13 @@ export default async function VendedorLayout({
           </div>
         </div>
         <nav className="flex-1 p-3 space-y-1">
+          <Link
+            href="/dueno/analytics"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors mb-1"
+          >
+            <span>←</span>
+            Volver al panel
+          </Link>
           <NavLink href="/vendedor" icon="🛒">Pedidos</NavLink>
           <NavLink href="/vendedor/calculadora" icon="🧮">Calculadora POS</NavLink>
           <NavLink href="/vendedor/mis-clientes" icon="👥">Mis clientes</NavLink>

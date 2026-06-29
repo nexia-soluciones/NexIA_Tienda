@@ -48,6 +48,13 @@ const NEXT_STATUS: Record<OrderStatus, OrderStatus | null> = {
   cancelado:      null,
 };
 
+// Color del botón según la etapa a la que LLEVA (para que cada paso se vea distinto).
+const NEXT_BTN: Record<string, string> = {
+  en_preparacion: "bg-blue-600 hover:bg-blue-700",
+  listo_entrega:  "bg-purple-600 hover:bg-purple-700",
+  entregado:      "bg-green-600 hover:bg-green-700",
+};
+
 // Eje de PAGO (payment_status) — separado del de entrega (patrón Medusa, Ola 1).
 const PAY: Record<PaymentStatus, { label: string; color: string }> = {
   paid:     { label: "Pagado",         color: "bg-green-100 text-green-700" },
@@ -154,7 +161,9 @@ export default function EmpleadoOrderCard({ order }: { order: EmpleadoOrder }) {
             <button
               onClick={() => nextStatus && cambiarA(nextStatus)}
               disabled={saving}
-              className="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className={`flex-1 text-white text-sm py-2 rounded-lg font-medium disabled:opacity-50 transition-colors ${
+                nextStatus ? NEXT_BTN[nextStatus] : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
               {saving ? "..." : `${nextStep.icon} Marcar ${nextStep.label.toLowerCase()}`}
             </button>
