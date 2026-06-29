@@ -6,7 +6,44 @@
 
 ---
 
-## 0. Bitácora — sesión 2026-06-28 (Ola 1 — refuerzo con patrones Medusa)
+## 0. Bitácora — sesión 2026-06-29 (build-out: bot asesor, onboarding, branding, analytics, seguimiento)
+
+Sesión grande. Todo en `main` (*deploy pendiente en EasyPanel salvo lo marcado "BD/n8n en vivo"*).
+
+**Catálogo / categorías**
+- ✅ 244 productos reclasificados de "suplementos" a **13 categorías por necesidad** (Para sentirte joven, Malestares comunes, Digestión y detox, etc.) vía Claude. (BD en vivo)
+- ✅ Acentos corruptos (`�`) reparados en beneficios/tags (U+FFFD no se re-decodifica → regenerado con LLM + validación por posición). (BD en vivo)
+- ✅ Filtro de categorías de la tienda pública: ahora **clickable** (`Catalogo.tsx`, antes eran `<span>` muertos).
+
+**Bot Telegram (kpA4Qv6eXEcQ9vEe) — todo en vivo**
+- ✅ **Fotos**: búsqueda por síntoma y categorías responden con `sendPhoto` por producto.
+- ✅ **Conversacional**: Claude detecta saludo/charla vs necesidad (modo Bambule).
+- ✅ **Modo admin** (gateado por tabla `bot_admins`): `/admin` (ventas del día), `/precio <prod> <valor>` (con confirmación), y NL admin-consciente ("qué stock bajo" → lista; "ventas" → /admin). Cliente nunca ve gestión.
+- ✅ **Onboarding del dueño** `/configurar` (todo botones): guarda `intencion`+`meta` en `tenant_profile`.
+- ✅ **Enlace web→bot**: `/start ped_<folio>` (del QR del checkout) vincula el pedido web al chat del cliente.
+
+**Cron / notificaciones (n8n + BD, en vivo)**
+- ✅ **Cierre del día 9pm** (workflow `yQK7uklY7NsgNREy`, scheduleTrigger 21:00 MX): manda ventas+insights a los `bot_admins`.
+- ✅ Trigger `notify_customer_status`: al marcar pedido **"listo para entrega"**, avisa por Telegram al cliente (del bot o web enlazado).
+
+**Panel / tienda web**
+- ✅ **Analytics** con Recharts (donas categoría/canal, vistas `v_sales_by_category`/`v_sales_by_channel`, tablas colapsables).
+- ✅ **Configuración de marca** (`/dueno/configuracion`): logo + color primario/acento + tagline → se aplican a la tienda pública (var CSS `--brand-primary`). Naturaleza Mística ya con logo real + verde/morado.
+- ✅ Accesos en panel del dueño: **Pedidos** (→/empleado) y **Mostrador POS** (→/vendedor/calculadora); el admin hace esas tareas (no hay usuarios "empleado").
+- ✅ Pedido (`/empleado`): botón de avance **coloreado por etapa** (azul→morado→verde); links "← Panel" para no quedar atrapado.
+- ✅ Checkout web: textos a **Telegram** (no WhatsApp), **QR de seguimiento** al bot, columnas `customer_phone/customer_address`.
+- ✅ Logout cliente + 5 botones POST→Server Actions (evitan 405 de Traefik).
+- ✅ **Footer "Powered by NexIA"** + "Genera tu tienda gratis" → /registro, en toda la tienda pública.
+
+**`bot_admins` (chat_id):** Mario Padilla `6065549978` (dueño) · Blanca Becerril `5965579916` (co-dueña) · Juan `5367409334` (consultor).
+
+**Pendiente / radar:** deploy EasyPanel; activar webhook Stripe; **detector "momento de local"**; integración Mercado Libre/paquetería; columna `products.cost` para estrategia por margen.
+
+**⚠️ Gotcha dev:** NUNCA `npm run build` con `npm run dev` corriendo (corrompe `.next` → Turbopack panic → "no deja de refrescar"). Usar `tsc --noEmit` para verificar con el dev vivo.
+
+---
+
+## 0.bis Bitácora — sesión 2026-06-28 (Ola 1 — refuerzo con patrones Medusa)
 
 Se evaluaron **Medusa** (headless commerce) y **Logto** (auth) como referencia de estructura.
 Decisión: **NO migrar** a ninguno (chocan con el stack Nexia). De Medusa se **extraen patrones**;
