@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function EmpleadoLayout({
   children,
@@ -32,14 +33,7 @@ export default async function EmpleadoLayout({
           <p className="text-xs text-gray-400">Control de ventas</p>
         </div>
         {process.env.NODE_ENV !== "development" && (
-          <form action="/auth/logout" method="post">
-            <button
-              type="submit"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              Salir
-            </button>
-          </form>
+          <LogoutButton className="text-sm text-gray-500 hover:text-gray-900 transition-colors" label="Salir" />
         )}
       </header>
       <main className="max-w-4xl mx-auto px-6 py-8">{children}</main>

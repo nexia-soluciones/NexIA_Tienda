@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function DashboardLayout({
   children,
@@ -55,14 +56,7 @@ export default async function DashboardLayout({
           </Link>
         </nav>
         <div className="p-4 border-t border-gray-200">
-          <form action="/auth/logout" method="post">
-            <button
-              type="submit"
-              className="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              Cerrar sesión
-            </button>
-          </form>
+          <LogoutButton className="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors" />
         </div>
       </aside>
 

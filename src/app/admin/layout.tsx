@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function AdminLayout({
   children,
@@ -35,14 +36,7 @@ export default async function AdminLayout({
           <NavLink href="/admin/branding" icon="✨">Branding de marca</NavLink>
         </nav>
         <div className="p-3 border-t border-gray-800">
-          <form action="/auth/logout" method="post">
-            <button
-              type="submit"
-              className="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-800"
-            >
-              Cerrar sesión
-            </button>
-          </form>
+          <LogoutButton className="w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-800" />
         </div>
       </aside>
       <main className="flex-1 overflow-auto p-6">{children}</main>
